@@ -14,14 +14,17 @@ class Cloudflare:
         }
 
     def getmyip(self):
+        """ Get public IP """
         pub_ip = requests.get("https://api.ipify.org/")
         return pub_ip.text
 
     def user(self):
+        """ Get the user """
         user = requests.get(self.endpoint + "/user", headers=self.headers)
         return user.json()
 
     def zones(self, zone):
+        """ Get the zones """
         payload = {"name": zone}
         zones = requests.get(
             self.endpoint + "/zones", headers=self.headers, params=payload
@@ -29,6 +32,7 @@ class Cloudflare:
         return zones.json()
 
     def dns_records(self, zone_id, record):
+        """ Get the dns records for the zones """
         payload = {"name": record}
         records = requests.get(
             self.endpoint + "/zones/" + zone_id + "/dns_records",
@@ -38,6 +42,7 @@ class Cloudflare:
         return records.json()
 
     def update_record(self, zone_id, record_id, record, ip_address):
+        """ Update the record to use the new public IP """
         payload = {"type": "A", "name": record, "content": ip_address}
         record = requests.put(
             self.endpoint + "/zones/" + zone_id + "/dns_records/" + record_id,
@@ -47,6 +52,7 @@ class Cloudflare:
         return record.json()
 
     def __call__(self, zone, record):
+        """ If public IP has changed, call update_record method """
         zone_id = cf.zones(zone)["result"][0]["id"]
         record_id = cf.dns_records(zone_id, record)["result"][0]["id"]
         ip_address = cf.getmyip()
