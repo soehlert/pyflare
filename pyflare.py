@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import requests
+import sys
 
 
 # Logging setup
@@ -105,9 +106,9 @@ if __name__ == "__main__":
         else:
             log.setLevel(logging.INFO)
         cf = Cloudflare(email, key)
-        log.info(f"Using config file: {config_file}")
-        log.info(f"Zone: {zone}")
-        log.info(f"Record: {record}")
+        log.info("Using config file: {}".format(config_file))
+        log.info("Zone: {}".format(zone))
+        log.info("Record: {}".format(record))
         log.debug(cf(zone, record))
     except IOError:
         log.critical("Unable to find or read config file.")
