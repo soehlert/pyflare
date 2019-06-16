@@ -1,7 +1,18 @@
 #! /usr/bin/python
 import json
+import logging
 import os
 import requests
+
+
+# Logging setup
+log = logging.getLogger()  # 'root' Logger
+console = logging.StreamHandler()
+format_str = "%(levelname)s: %(filename)s:%(lineno)s -- %(message)s"
+console.setFormatter(logging.Formatter(format_str))
+log.addHandler(console)
+
+acceptable_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 class Cloudflare:
@@ -66,14 +77,37 @@ if __name__ == "__main__":
     __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__))
     )
+    config_file = os.path.join(__location__, "config.json")
     try:
-        with open(os.path.join(__location__, "config.json")) as json_data_file:
+        with open(config_file, "r") as json_data_file:
             config = json.load(json_data_file)
+            if "PYFLARE_LOG_LEVEL" in os.environ:
+                log_level = os.environ["PYFLARE_LOG_LEVEL"]
+            else:
+                log_level = config["log_level"]
             email = config["email"]
             key = config["key"]
             zone = config["zone"]
             record = config["record"]
+
+        ll = log_level.upper()
+        if ll not in acceptable_log_levels:
+            log.critical("Please choose an accepted python logging level")
+            sys.exit()
+        elif ll == "CRITICAL":
+            log.setLevel(logging.CRITICAL)
+        elif ll == "ERROR":
+            log.setLevel(logging.ERROR)
+        elif ll == "WARNING":
+            log.setLevel(logging.WARNING)
+        elif ll == "DEBUG":
+            log.setLevel(logging.DEBUG)
+        else:
+            log.setLevel(logging.INFO)
         cf = Cloudflare(email, key)
-        print(cf(zone, record))
+        log.info(f"Using config file: {config_file}")
+        log.info(f"Zone: {zone}")
+        log.info(f"Record: {record}")
+        log.debug(cf(zone, record))
     except IOError:
-        print("Unable to find config file.")
+        log.critical("Unable to find or read config file.")
