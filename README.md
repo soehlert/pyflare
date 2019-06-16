@@ -10,8 +10,13 @@ If you are a Redditor please go give u/TheFirsh some tasty tasty karma.
 # config.json
 
 You will need to create a config.json file in the same folder as pyflare.py - this file must be json formatted and contain the following 4 elements.
+
 ```
 {
+  # Log level for the program; it will log anything at this level or higher
+  # "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+  # You can overwrite this with the PYFLARE_LOG_LEVEL env variable
+  "log_level": "",
   # The email address on your Cloudflare account
 	"email": "",
   # The Global API key on your account
@@ -22,4 +27,10 @@ You will need to create a config.json file in the same folder as pyflare.py - th
   # This record should already exist in Cloudflare
 	"record": ""
 }
+```
+
+You can also change the log level (useful for debugging purposes mainly) one time, by setting the PYFLARE_LOG_LEVEL environment variable:
+
+```bash 
+$ export PYFLARE_LOG_LEVEL
 ```
