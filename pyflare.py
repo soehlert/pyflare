@@ -14,35 +14,37 @@ class Cloudflare:
         }
 
     def getmyip(self):
-        r = requests.get("https://api.ipify.org/")
-        return r.text
+        pub_ip = requests.get("https://api.ipify.org/")
+        return pub_ip.text
 
     def user(self):
-        r = requests.get(self.endpoint + "/user", headers=self.headers)
-        return r.json()
+        user = requests.get(self.endpoint + "/user", headers=self.headers)
+        return user.json()
 
     def zones(self, zone):
         payload = {"name": zone}
-        r = requests.get(self.endpoint + "/zones", headers=self.headers, params=payload)
-        return r.json()
+        zones = requests.get(
+            self.endpoint + "/zones", headers=self.headers, params=payload
+        )
+        return zones.json()
 
     def dns_records(self, zone_id, record):
         payload = {"name": record}
-        r = requests.get(
+        records = requests.get(
             self.endpoint + "/zones/" + zone_id + "/dns_records",
             headers=self.headers,
             params=payload,
         )
-        return r.json()
+        return records.json()
 
     def update_record(self, zone_id, record_id, record, ip_address):
         payload = {"type": "A", "name": record, "content": ip_address}
-        r = requests.put(
+        record = requests.put(
             self.endpoint + "/zones/" + zone_id + "/dns_records/" + record_id,
             headers=self.headers,
             data=json.dumps(payload),
         )
-        return r.json()
+        return record.json()
 
     def __call__(self, zone, record):
         zone_id = cf.zones(zone)["result"][0]["id"]
@@ -51,7 +53,7 @@ class Cloudflare:
         if ip_address != cf.dns_records(zone_id, record)["result"][0]["content"]:
             return cf.update_record(zone_id, record_id, record, ip_address)
         else:
-            return "OK"
+            return
 
 
 if __name__ == "__main__":
@@ -59,7 +61,6 @@ if __name__ == "__main__":
         os.path.join(os.getcwd(), os.path.dirname(__file__))
     )
     try:
-        print("opening config file")
         with open(os.path.join(__location__, "config.json")) as json_data_file:
             config = json.load(json_data_file)
             email = config["email"]
