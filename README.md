@@ -18,14 +18,14 @@ You will need to create a config.json file in the same folder as pyflare.py - th
   # You can overwrite this with the PYFLARE_LOG_LEVEL env variable
   "log_level": "",
   # The email address on your Cloudflare account
-	"email": "",
+  "email": "",
   # The Global API key on your account
-	"key": "",
+  "key": "",
   # The zone for which you'll be updating a record (ie example.com)
-	"zone": "",
+  "zone": "",
   # The record for which you'll be updating (ie home.example.com)
   # This record should already exist in Cloudflare
-	"record": ""
+  "record": ""
 }
 ```
 
